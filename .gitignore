@@ -13,7 +13,12 @@ dist-ssr
 
 # Server
 server/database.sqlite
+server/database.sqlite-wal
+server/database.sqlite-shm
 server/uploads/
+server-dist/database.sqlite
+server-dist/database.sqlite-wal
+server-dist/database.sqlite-shm
 .env
 
 # Editor directories and files
