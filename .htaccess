@@ -1,0 +1,7 @@
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/pcnrs/smashburger.pcn.rs"
+PassengerBaseURI "/"
+PassengerNodejs "/home/pcnrs/nodevenv/smashburger.pcn.rs/22/bin/node"
+PassengerAppType node
+PassengerStartupFile app.js
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
