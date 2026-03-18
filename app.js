@@ -1,9 +1,6 @@
-import { register } from "node:module";
-register("tsx/esm", import.meta.url);
+import { default as app } from "./server-dist/index.mjs";
 
-const { default: app } = await import("./server/index.ts");
-
-// Passenger binds to this — do NOT remove
+// Passenger (cPanel) binds here
 if (typeof PhusionPassenger !== "undefined") {
     app.listen("passenger", () => {
         console.log("🔥 SMASH running via Passenger");

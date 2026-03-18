@@ -8,8 +8,10 @@
     "dev:server": "tsx watch server/index.ts",
     "dev:all": "tsx watch server/index.ts & vite",
     "seed": "tsx server/seed.ts",
-    "build": "tsc -b && vite build",
-    "start": "node --import tsx server/index.ts",
+    "build": "tsc -b && vite build && npm run build:server",
+    "build:server": "npx esbuild server/index.ts server/seed.ts --bundle --platform=node --format=esm --outdir=server-dist --packages=external --out-extension:.js=.mjs --banner:js=\"import { createRequire } from 'module'; const require = createRequire(import.meta.url);\"",
+    "start": "node server-dist/index.mjs",
+    "start:dev": "node --import tsx server/index.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },
