@@ -402,7 +402,7 @@ app.get("/api/events", (req, res) => {
   addClient(res);
 });
 var distPath = path2.join(__dirname2, "..", "dist");
-app.use(express.static(distPath));
+app.use(express.static(distPath, { maxAge: "1y", immutable: true }));
 app.get("/{*splat}", (_req, res) => {
   res.sendFile(path2.join(distPath, "index.html"));
 });

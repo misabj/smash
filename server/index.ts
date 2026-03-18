@@ -43,7 +43,7 @@ app.get("/api/events", (req, res) => {
 
 // Serve frontend in production
 const distPath = path.join(__dirname, "..", "dist");
-app.use(express.static(distPath));
+app.use(express.static(distPath, { maxAge: "1y", immutable: true }));
 app.get("/{*splat}", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
 });
