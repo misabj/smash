@@ -48,8 +48,8 @@ app.get("/{*splat}", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
 });
 
-app.listen(PORT, () => {
-    console.log(`\n🔥 SMASH API server running on http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`\n🔥 SMASH API server running on port ${PORT}`);
     console.log(`📁 Database: ${path.join(__dirname, "database.sqlite")}`);
     console.log(`📂 Static files: ${distPath}`);
     console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}\n`);
