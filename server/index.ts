@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import compression from "compression";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -18,6 +19,7 @@ const PORT = Number(process.env.PORT) || 3001;
 const allowedOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(",")
     : ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:4173"];
+app.use(compression());
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 

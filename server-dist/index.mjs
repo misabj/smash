@@ -3,6 +3,7 @@ import { createRequire } from 'module'; const require = createRequire(import.met
 // server/index.ts
 import "dotenv/config";
 import express from "express";
+import compression from "compression";
 import cors from "cors";
 import path2 from "path";
 import { fileURLToPath as fileURLToPath2 } from "url";
@@ -385,6 +386,7 @@ var __dirname2 = path2.dirname(fileURLToPath2(import.meta.url));
 var app = express();
 var PORT = Number(process.env.PORT) || 3001;
 var allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",") : ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:4173"];
+app.use(compression());
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 app.use("/uploads", express.static(path2.join(__dirname2, "uploads")));
