@@ -86,7 +86,7 @@ export default function Footer() {
                         <ul className="space-y-3 text-white/40 text-sm">
                             <li className="flex items-center gap-2">
                                 <MapPin className="w-4 h-4 text-[var(--color-primary)]" />
-                                Knez Mihailova 15, Beograd
+                                Braće Jerković, Beograd
                             </li>
                             <li className="flex items-center gap-2">
                                 <Phone className="w-4 h-4 text-[var(--color-primary)]" />
