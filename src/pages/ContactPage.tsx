@@ -52,7 +52,7 @@ export default function ContactPage() {
                             {
                                 icon: MapPin,
                                 title: "Adresa",
-                                details: ["Knez Mihailova 15", "11000 Beograd, Srbija"],
+                                details: ["Naselje Braće Jerković", "11223 Beograd, Srbija"],
                             },
                             {
                                 icon: Phone,
@@ -92,12 +92,18 @@ export default function ContactPage() {
                             </div>
                         ))}
 
-                        {/* Map placeholder */}
-                        <div className="rounded-2xl overflow-hidden h-64 bg-[var(--color-dark-light)] border border-white/5 flex items-center justify-center">
-                            <div className="text-center text-white/30">
-                                <MapPin className="w-10 h-10 mx-auto mb-2 opacity-50" />
-                                <p className="text-sm">Knez Mihailova 15, Beograd</p>
-                            </div>
+                        {/* Google Maps */}
+                        <div className="rounded-2xl overflow-hidden h-64 border border-white/5">
+                            <iframe
+                                title="Lokacija"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11323.177036903042!2d20.4750!3d44.7700!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x475a706fa27f4c4b%3A0xa6e907e46cbb539e!2z0J3QsNGB0LXRmdC1INCR0YDQsNGb0LUg0IjQtdGA0LrQvtCy0LjRmw!5e0!3m2!1ssr!2srs!4v1710700000000!5m2!1ssr!2srs"
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            />
                         </div>
                     </motion.div>
 
