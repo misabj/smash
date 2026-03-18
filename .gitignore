@@ -31,3 +31,5 @@ server-dist/database.sqlite-shm
 *.njsproj
 *.sln
 *.sw?
+
+.htaccess
