@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Check, X } from "lucide-react";
 import { useEffect } from "react";
+import { useT } from "../context/LanguageContext";
 
 export interface CartToastData {
     id: number;
@@ -32,6 +33,8 @@ export default function CartToast({ toasts, onDismiss }: Props) {
 }
 
 function ToastItem({ toast, onDismiss }: { toast: CartToastData; onDismiss: (id: number) => void }) {
+    const { t } = useT();
+
     useEffect(() => {
         const timer = setTimeout(() => onDismiss(toast.id), TOAST_DURATION);
         return () => clearTimeout(timer);
@@ -59,7 +62,7 @@ function ToastItem({ toast, onDismiss }: { toast: CartToastData; onDismiss: (id:
                 <p className="text-sm font-semibold text-white/90 truncate">{toast.name}</p>
                 <p className="text-xs text-white/40 flex items-center gap-1 mt-0.5">
                     <ShoppingBag className="w-3 h-3" />
-                    Dodato u korpu &middot; {toast.price.toLocaleString("sr-RS")} RSD
+                    {t("toast_added")} &middot; {toast.price.toLocaleString("sr-RS")} RSD
                 </p>
             </div>
 

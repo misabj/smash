@@ -123,3 +123,27 @@ export interface StatsAPI {
 export const statsApi = {
     get: () => request<StatsAPI>("/stats"),
 };
+
+// Promotions
+export interface PromotionAPI {
+    id: number;
+    name: string;
+    description: string;
+    discount_percent: number;
+    applicable_category: "burger" | "sandwich" | "sides" | "drinks" | "all";
+    start_date: string;
+    end_date: string;
+    active: boolean;
+    created_at: string;
+}
+
+export const promotionsApi = {
+    getActive: () => request<PromotionAPI[]>("/promotions"),
+    getAllAdmin: () => request<PromotionAPI[]>("/promotions/all"),
+    create: (data: Partial<PromotionAPI>) =>
+        request<PromotionAPI>("/promotions", { method: "POST", body: JSON.stringify(data) }),
+    update: (id: number, data: Partial<PromotionAPI>) =>
+        request<PromotionAPI>(`/promotions/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+    delete: (id: number) =>
+        request<{ message: string }>(`/promotions/${id}`, { method: "DELETE" }),
+};

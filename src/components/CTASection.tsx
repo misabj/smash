@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { useT } from "../context/LanguageContext";
 
 export default function CTASection() {
+    const { t } = useT();
+
     return (
         <section className="py-20 md:py-28 px-4 relative overflow-hidden">
             {/* BG glow */}
@@ -17,8 +20,8 @@ export default function CTASection() {
                     viewport={{ once: true }}
                     className="text-3xl md:text-5xl font-black mb-6"
                 >
-                    Spreman da probaš{" "}
-                    <span className="text-[var(--color-primary)]">najbolje?</span>
+                    {t("cta_title1")}{" "}
+                    <span className="text-[var(--color-primary)]">{t("cta_title2")}</span>
                 </motion.h2>
 
                 <motion.p
@@ -28,8 +31,7 @@ export default function CTASection() {
                     transition={{ delay: 0.1 }}
                     className="text-white/50 text-lg mb-10 max-w-lg mx-auto"
                 >
-                    Naruči online ili nas poseti na našoj lokaciji. Garantujemo da ćeš se
-                    vratiti.
+                    {t("cta_subtitle")}
                 </motion.p>
 
                 <motion.div
@@ -42,7 +44,7 @@ export default function CTASection() {
                         to="/menu"
                         className="inline-flex items-center gap-2 px-10 py-4 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold rounded-full transition-all duration-300 shadow-lg shadow-[var(--color-primary)]/25 hover:shadow-[var(--color-primary)]/40 group"
                     >
-                        Naruči odmah
+                        {t("cta_button")}
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </motion.div>

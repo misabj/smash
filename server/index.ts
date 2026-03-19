@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.js";
 import menuRoutes from "./routes/menu.js";
 import orderRoutes from "./routes/orders.js";
 import statsRoutes from "./routes/stats.js";
+import promotionRoutes from "./routes/promotions.js";
 import { addClient } from "./sse.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -31,6 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/menu", menuRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api/promotions", promotionRoutes);
 
 // SSE endpoint for real-time admin notifications
 app.get("/api/events", (req, res) => {
@@ -45,8 +47,12 @@ app.get("/api/events", (req, res) => {
 
 // Serve frontend in production
 const distPath = path.join(__dirname, "..", "dist");
-app.use(express.static(distPath, { maxAge: "1y", immutable: true }));
+// Long cache for hashed assets only (JS/CSS/images with content hash in filename)
+app.use("/assets", express.static(path.join(distPath, "assets"), { maxAge: "1y", immutable: true }));
+// No cache for other files (index.html, favicon, etc.)
+app.use(express.static(distPath, { maxAge: 0 }));
 app.get("/{*splat}", (_req, res) => {
+    res.setHeader("Cache-Control", "no-cache");
     res.sendFile(path.join(distPath, "index.html"));
 });
 

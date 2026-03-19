@@ -2,10 +2,12 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { useMenuItems } from "../hooks/useMenuItems";
+import { useT } from "../context/LanguageContext";
 import MenuCard from "./MenuCard";
 
 export default function FeaturedMenu() {
     const { items } = useMenuItems();
+    const { t } = useT();
     const featured = items.filter((item) => item.popular).slice(0, 4);
 
     return (
@@ -19,7 +21,7 @@ export default function FeaturedMenu() {
                         viewport={{ once: true }}
                         className="text-[var(--color-primary)] text-sm font-semibold uppercase tracking-[0.2em]"
                     >
-                        Naš meni
+                        {t("featured_label")}
                     </motion.span>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
@@ -28,7 +30,7 @@ export default function FeaturedMenu() {
                         transition={{ delay: 0.1 }}
                         className="text-3xl md:text-5xl font-black mt-3 mb-4"
                     >
-                        Najpopularniji izbor
+                        {t("featured_title")}
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -37,8 +39,7 @@ export default function FeaturedMenu() {
                         transition={{ delay: 0.2 }}
                         className="text-white/50 max-w-md mx-auto"
                     >
-                        Probajte naše najtraženije burgere i sendviče — svaki je priča za
-                        sebe.
+                        {t("featured_subtitle")}
                     </motion.p>
                 </div>
 
@@ -60,7 +61,7 @@ export default function FeaturedMenu() {
                         to="/menu"
                         className="inline-flex items-center gap-2 text-[var(--color-primary)] hover:text-[var(--color-primary-light)] font-semibold transition-colors group"
                     >
-                        Pogledaj ceo meni
+                        {t("featured_cta")}
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </motion.div>

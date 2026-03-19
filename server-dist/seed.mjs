@@ -52,6 +52,18 @@ db.exec(`
     estimated_delivery_at DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS promotions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT DEFAULT '',
+    discount_percent INTEGER NOT NULL CHECK(discount_percent > 0 AND discount_percent <= 100),
+    applicable_category TEXT CHECK(applicable_category IN ('burger', 'sandwich', 'sides', 'drinks', 'all')),
+    start_date TEXT NOT NULL,
+    end_date TEXT NOT NULL,
+    active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 var db_default = db;
 

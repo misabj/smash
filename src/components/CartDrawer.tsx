@@ -2,11 +2,15 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag, Trash2, Check, MapPin, Mail, User, Phone, ArrowLeft } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useT } from "../context/LanguageContext";
+import { usePromotions } from "../context/PromotionsContext";
 import { ordersApi } from "../services/api";
 
 export default function CartDrawer() {
-    const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalPrice, clearCart } =
+    const { items, isOpen, setIsOpen, removeItem, updateQuantity, clearCart } =
         useCart();
+    const { t } = useT();
+    const { getDiscount } = usePromotions();
     const [ordering, setOrdering] = useState(false);
     const [step, setStep] = useState<"cart" | "checkout" | "success">("cart");
     const [trackingCode, setTrackingCode] = useState("");
@@ -20,6 +24,14 @@ export default function CartDrawer() {
 
     const formatPrice = (price: number) => `${price.toLocaleString("sr-RS")} RSD`;
 
+    const getItemPrice = (item: { price: number; category: string; quantity: number }) => {
+        const discount = getDiscount(item.category);
+        const unitPrice = discount > 0 ? Math.round(item.price * (1 - discount / 100)) : item.price;
+        return unitPrice * item.quantity;
+    };
+
+    const discountedTotal = items.reduce((sum, item) => sum + getItemPrice(item), 0);
+
     const handleProceedToCheckout = () => {
         setFormError("");
         setStep("checkout");
@@ -28,11 +40,11 @@ export default function CartDrawer() {
     const handleOrder = async () => {
         setFormError("");
         if (!deliveryAddress.trim()) {
-            setFormError("Unesite adresu za dostavu.");
+            setFormError(t("cart_err_address"));
             return;
         }
         if (!customerEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
-            setFormError("Unesite ispravnu email adresu.");
+            setFormError(t("cart_err_email"));
             return;
         }
 
@@ -44,13 +56,13 @@ export default function CartDrawer() {
                 customerEmail: customerEmail.trim(),
                 deliveryAddress: deliveryAddress.trim(),
                 items: items.map((i) => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity })),
-                total: totalPrice,
+                total: discountedTotal,
             });
             clearCart();
             setTrackingCode(order.tracking_code);
             setStep("success");
         } catch {
-            setFormError("Greška pri slanju porudžbine. Pokušajte ponovo.");
+            setFormError(t("cart_err_send"));
         } finally {
             setOrdering(false);
         }
@@ -101,7 +113,7 @@ export default function CartDrawer() {
                                 )}
                                 <ShoppingBag className="w-5 h-5 text-[var(--color-primary)]" />
                                 <h2 className="text-lg font-bold">
-                                    {step === "cart" ? "Vaša korpa" : step === "checkout" ? "Dostava" : "Uspešno!"}
+                                    {step === "cart" ? t("cart_title") : step === "checkout" ? t("cart_delivery") : t("cart_success_title")}
                                 </h2>
                             </div>
                             <button
@@ -118,25 +130,25 @@ export default function CartDrawer() {
                                 <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mb-6">
                                     <Check className="w-10 h-10 text-green-400" />
                                 </div>
-                                <h3 className="text-2xl font-bold mb-2">Porudžbina poslata!</h3>
+                                <h3 className="text-2xl font-bold mb-2">{t("cart_order_sent")}</h3>
                                 <p className="text-white/50 text-sm mb-6">
-                                    Na vašu email adresu ćete dobiti potvrdu sa linkom za praćenje statusa porudžbine.
+                                    {t("cart_order_sent_desc")}
                                 </p>
                                 <div className="w-full p-4 rounded-xl bg-[var(--color-dark-light)] border border-white/5 mb-6">
-                                    <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Kod za praćenje</p>
+                                    <p className="text-white/40 text-xs uppercase tracking-wider mb-1">{t("cart_tracking_code")}</p>
                                     <p className="text-2xl font-bold text-[var(--color-primary)] tracking-wider">{trackingCode}</p>
                                 </div>
                                 <a
                                     href={`/track/${trackingCode}`}
                                     className="w-full py-3 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold rounded-xl transition-colors text-center block"
                                 >
-                                    Prati porudžbinu →
+                                    {t("cart_track_order")}
                                 </a>
                                 <button
                                     onClick={handleClose}
                                     className="mt-3 text-white/30 hover:text-white/50 text-sm transition-colors cursor-pointer"
                                 >
-                                    Zatvori
+                                    {t("cart_close")}
                                 </button>
                             </div>
                         )}
@@ -148,12 +160,12 @@ export default function CartDrawer() {
                                     {items.length === 0 ? (
                                         <div className="flex flex-col items-center justify-center h-full text-center">
                                             <ShoppingBag className="w-16 h-16 text-white/10 mb-4" />
-                                            <p className="text-white/40 text-sm">Vaša korpa je prazna</p>
+                                            <p className="text-white/40 text-sm">{t("cart_empty")}</p>
                                             <button
                                                 onClick={handleClose}
                                                 className="mt-4 text-[var(--color-primary)] text-sm font-medium hover:underline cursor-pointer"
                                             >
-                                                Pogledaj meni →
+                                                {t("cart_view_menu")}
                                             </button>
                                         </div>
                                     ) : (
@@ -184,7 +196,7 @@ export default function CartDrawer() {
                                                         </button>
                                                     </div>
                                                     <p className="text-[var(--color-primary)] text-sm font-medium mt-1">
-                                                        {formatPrice(item.price * item.quantity)}
+                                                        {formatPrice(getItemPrice(item))}
                                                     </p>
                                                     <div className="flex items-center gap-2 mt-2">
                                                         <button
@@ -217,9 +229,9 @@ export default function CartDrawer() {
                                 {items.length > 0 && (
                                     <div className="p-5 border-t border-white/5 space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-white/50">Ukupno</span>
+                                            <span className="text-white/50">{t("cart_total")}</span>
                                             <span className="text-xl font-bold text-[var(--color-primary)]">
-                                                {formatPrice(totalPrice)}
+                                                {formatPrice(discountedTotal)}
                                             </span>
                                         </div>
 
@@ -227,14 +239,14 @@ export default function CartDrawer() {
                                             onClick={handleProceedToCheckout}
                                             className="w-full py-4 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold rounded-xl transition-colors cursor-pointer"
                                         >
-                                            Nastavi na dostavu →
+                                            {t("cart_proceed")}
                                         </button>
 
                                         <button
                                             onClick={clearCart}
                                             className="w-full py-2 text-white/30 hover:text-white/50 text-sm transition-colors cursor-pointer"
                                         >
-                                            Isprazni korpu
+                                            {t("cart_clear")}
                                         </button>
                                     </div>
                                 )}
@@ -245,19 +257,19 @@ export default function CartDrawer() {
                         {step === "checkout" && (
                             <>
                                 <div className="flex-1 overflow-y-auto p-5 space-y-5">
-                                    <p className="text-white/40 text-sm">Unesite podatke za dostavu. Na email ćete dobiti link za praćenje porudžbine.</p>
+                                    <p className="text-white/40 text-sm">{t("cart_form_intro")}</p>
 
                                     {/* Delivery Address */}
                                     <div>
                                         <label className="text-sm font-medium text-white/70 mb-1.5 flex items-center gap-1.5">
                                             <MapPin className="w-3.5 h-3.5 text-[var(--color-primary)]" />
-                                            Adresa za dostavu <span className="text-red-400">*</span>
+                                            {t("cart_address")} <span className="text-red-400">*</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={deliveryAddress}
                                             onChange={(e) => setDeliveryAddress(e.target.value)}
-                                            placeholder="Ulica i broj, grad"
+                                            placeholder={t("cart_address_placeholder")}
                                             className="w-full px-4 py-3 bg-[var(--color-dark-light)] border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                                         />
                                     </div>
@@ -266,7 +278,7 @@ export default function CartDrawer() {
                                     <div>
                                         <label className="text-sm font-medium text-white/70 mb-1.5 flex items-center gap-1.5">
                                             <Mail className="w-3.5 h-3.5 text-[var(--color-primary)]" />
-                                            Email adresa <span className="text-red-400">*</span>
+                                            {t("cart_email")} <span className="text-red-400">*</span>
                                         </label>
                                         <input
                                             type="email"
@@ -275,20 +287,20 @@ export default function CartDrawer() {
                                             placeholder="vas@email.com"
                                             className="w-full px-4 py-3 bg-[var(--color-dark-light)] border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                                         />
-                                        <p className="text-white/30 text-xs mt-1">Dobićete link za praćenje statusa porudžbine</p>
+                                        <p className="text-white/30 text-xs mt-1">{t("cart_email_hint")}</p>
                                     </div>
 
                                     {/* Name (optional) */}
                                     <div>
                                         <label className="text-sm font-medium text-white/70 mb-1.5 flex items-center gap-1.5">
                                             <User className="w-3.5 h-3.5 text-[var(--color-primary)]" />
-                                            Ime i prezime
+                                            {t("cart_name")}
                                         </label>
                                         <input
                                             type="text"
                                             value={customerName}
                                             onChange={(e) => setCustomerName(e.target.value)}
-                                            placeholder="Vaše ime"
+                                            placeholder={t("cart_name_placeholder")}
                                             className="w-full px-4 py-3 bg-[var(--color-dark-light)] border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                                         />
                                     </div>
@@ -297,7 +309,7 @@ export default function CartDrawer() {
                                     <div>
                                         <label className="text-sm font-medium text-white/70 mb-1.5 flex items-center gap-1.5">
                                             <Phone className="w-3.5 h-3.5 text-[var(--color-primary)]" />
-                                            Telefon
+                                            {t("cart_phone")}
                                         </label>
                                         <input
                                             type="tel"
@@ -310,16 +322,16 @@ export default function CartDrawer() {
 
                                     {/* Order summary */}
                                     <div className="p-4 rounded-xl bg-[var(--color-dark-light)] border border-white/5">
-                                        <p className="text-white/40 text-xs uppercase tracking-wider mb-3">Pregled porudžbine</p>
+                                        <p className="text-white/40 text-xs uppercase tracking-wider mb-3">{t("cart_order_summary")}</p>
                                         {items.map((item) => (
                                             <div key={item.id} className="flex justify-between py-1.5 text-sm">
                                                 <span className="text-white/70">{item.quantity}× {item.name}</span>
-                                                <span className="text-white/50">{formatPrice(item.price * item.quantity)}</span>
+                                                <span className="text-white/50">{formatPrice(getItemPrice(item))}</span>
                                             </div>
                                         ))}
                                         <div className="mt-2 pt-2 border-t border-white/5 flex justify-between font-bold">
-                                            <span>Ukupno</span>
-                                            <span className="text-[var(--color-primary)]">{formatPrice(totalPrice)}</span>
+                                            <span>{t("cart_total")}</span>
+                                            <span className="text-[var(--color-primary)]">{formatPrice(discountedTotal)}</span>
                                         </div>
                                     </div>
 
@@ -338,7 +350,7 @@ export default function CartDrawer() {
                                         {ordering ? (
                                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                         ) : (
-                                            <>Potvrdi porudžbinu — {formatPrice(totalPrice)}</>
+                                            <>{t("cart_confirm")} — {formatPrice(discountedTotal)}</>
                                         )}
                                     </button>
                                 </div>

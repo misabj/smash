@@ -2,20 +2,23 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import type { MenuItem } from "../data/menu";
 import { useMenuItems } from "../hooks/useMenuItems";
+import { useT } from "../context/LanguageContext";
+import type { TranslationKey } from "../i18n/translations";
 import MenuCard from "../components/MenuCard";
 
 type Category = "all" | MenuItem["category"];
 
-const categories: { id: Category; label: string }[] = [
-    { id: "all", label: "Sve" },
-    { id: "burger", label: "Burgeri" },
-    { id: "sandwich", label: "Sendviči" },
-    { id: "sides", label: "Prilozi" },
-    { id: "drinks", label: "Piće" },
+const categories: { id: Category; labelKey: TranslationKey }[] = [
+    { id: "all", labelKey: "menu_cat_all" },
+    { id: "burger", labelKey: "menu_cat_burger" },
+    { id: "sandwich", labelKey: "menu_cat_sandwich" },
+    { id: "sides", labelKey: "menu_cat_sides" },
+    { id: "drinks", labelKey: "menu_cat_drinks" },
 ];
 
 export default function MenuPage() {
     const { items: menuItems } = useMenuItems();
+    const { t } = useT();
     const [activeCategory, setActiveCategory] = useState<Category>("all");
 
     const filtered =
@@ -33,7 +36,7 @@ export default function MenuPage() {
                         animate={{ opacity: 1 }}
                         className="text-[var(--color-primary)] text-sm font-semibold uppercase tracking-[0.2em]"
                     >
-                        Istraži
+                        {t("menu_label")}
                     </motion.span>
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
@@ -41,7 +44,7 @@ export default function MenuPage() {
                         transition={{ delay: 0.1 }}
                         className="text-4xl md:text-6xl font-black mt-3 mb-4"
                     >
-                        Naš meni
+                        {t("menu_title")}
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -49,7 +52,7 @@ export default function MenuPage() {
                         transition={{ delay: 0.2 }}
                         className="text-white/50 max-w-md mx-auto"
                     >
-                        Svaki zalogaj je pažljivo osmišljen da pruži savršen spoj ukusa.
+                        {t("menu_subtitle")}
                     </motion.p>
                 </div>
 
@@ -69,7 +72,7 @@ export default function MenuPage() {
                                 : "bg-white/5 text-white/60 hover:bg-white/10"
                                 }`}
                         >
-                            {cat.label}
+                            {t(cat.labelKey)}
                         </button>
                     ))}
                 </motion.div>
@@ -86,7 +89,7 @@ export default function MenuPage() {
 
                 {filtered.length === 0 && (
                     <div className="text-center py-20 text-white/30">
-                        Nema stavki u ovoj kategoriji.
+                        {t("menu_empty")}
                     </div>
                 )}
             </div>

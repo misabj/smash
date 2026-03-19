@@ -1,8 +1,18 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import { useT } from "../context/LanguageContext";
+import type { TranslationKey } from "../i18n/translations";
 
 export default function Hero() {
+    const { t } = useT();
+
+    const stats: { value: string; labelKey: TranslationKey }[] = [
+        { value: "50K+", labelKey: "hero_stat_happy" },
+        { value: "4.9", labelKey: "hero_stat_rating" },
+        { value: "15+", labelKey: "hero_stat_recipes" },
+    ];
+
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Background image */}
@@ -30,7 +40,7 @@ export default function Hero() {
                 >
                     <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-[var(--color-primary)] font-medium backdrop-blur-sm">
                         <span className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-pulse" />
-                        Premium Smash Burgers
+                        {t("hero_badge")}
                     </span>
                 </motion.div>
 
@@ -40,10 +50,10 @@ export default function Hero() {
                     transition={{ duration: 0.8, delay: 0.4 }}
                     className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[0.9] tracking-tight mb-6"
                 >
-                    Ukus koji
+                    {t("hero_title1")}
                     <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-gold)] to-[var(--color-primary)]">
-                        ostavlja trag
+                        {t("hero_title2")}
                     </span>
                 </motion.h1>
 
@@ -53,8 +63,7 @@ export default function Hero() {
                     transition={{ duration: 0.8, delay: 0.6 }}
                     className="text-lg md:text-xl text-white/60 max-w-xl mx-auto mb-10 leading-relaxed"
                 >
-                    Sveži sastojci, savršeno pečeno meso, autorski sosevi — iskustvo koje
-                    ćete poželeti ponovo.
+                    {t("hero_subtitle")}
                 </motion.p>
 
                 <motion.div
@@ -67,14 +76,14 @@ export default function Hero() {
                         to="/menu"
                         className="group flex items-center gap-2 px-8 py-4 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold rounded-full transition-all duration-300 shadow-lg shadow-[var(--color-primary)]/25 hover:shadow-[var(--color-primary)]/40"
                     >
-                        Pogledaj meni
+                        {t("hero_cta")}
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                     <Link
                         to="/about"
                         className="flex items-center gap-2 px-8 py-4 border border-white/20 hover:border-white/40 text-white font-semibold rounded-full transition-all duration-300 hover:bg-white/5"
                     >
-                        Naša priča
+                        {t("hero_story")}
                     </Link>
                 </motion.div>
 
@@ -85,16 +94,12 @@ export default function Hero() {
                     transition={{ duration: 1, delay: 1.2 }}
                     className="mt-16 grid grid-cols-3 gap-8 max-w-md mx-auto"
                 >
-                    {[
-                        { value: "50K+", label: "Zadovoljnih" },
-                        { value: "4.9", label: "Ocena" },
-                        { value: "15+", label: "Recepata" },
-                    ].map((stat) => (
-                        <div key={stat.label} className="text-center">
+                    {stats.map((stat) => (
+                        <div key={stat.labelKey} className="text-center">
                             <div className="text-2xl md:text-3xl font-bold text-[var(--color-primary)]">
                                 {stat.value}
                             </div>
-                            <div className="text-xs text-white/40 mt-1">{stat.label}</div>
+                            <div className="text-xs text-white/40 mt-1">{t(stat.labelKey)}</div>
                         </div>
                     ))}
                 </motion.div>

@@ -1,7 +1,18 @@
 import { Link } from "react-router-dom";
 import { Flame, Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
+import { useT } from "../context/LanguageContext";
+import type { TranslationKey } from "../i18n/translations";
 
 export default function Footer() {
+    const { t } = useT();
+
+    const navLinks: { to: string; labelKey: TranslationKey }[] = [
+        { to: "/", labelKey: "nav_home" },
+        { to: "/menu", labelKey: "nav_menu" },
+        { to: "/about", labelKey: "nav_about" },
+        { to: "/contact", labelKey: "nav_contact" },
+    ];
+
     return (
         <footer className="bg-[var(--color-dark-light)] border-t border-white/5">
             <div className="max-w-7xl mx-auto px-4 py-14">
@@ -15,7 +26,7 @@ export default function Footer() {
                             </span>
                         </Link>
                         <p className="text-white/40 text-sm leading-relaxed">
-                            Premium smash burgers & sendviči. Svež ukus, iskrena hrana.
+                            {t("footer_desc")}
                         </p>
                         <div className="flex gap-3 mt-5">
                             <a
@@ -36,21 +47,16 @@ export default function Footer() {
                     {/* Quick links */}
                     <div>
                         <h4 className="text-sm font-semibold uppercase tracking-wider text-white/70 mb-4">
-                            Navigacija
+                            {t("footer_nav")}
                         </h4>
                         <ul className="space-y-3">
-                            {[
-                                { to: "/", label: "Početna" },
-                                { to: "/menu", label: "Meni" },
-                                { to: "/about", label: "O nama" },
-                                { to: "/contact", label: "Kontakt" },
-                            ].map((link) => (
+                            {navLinks.map((link) => (
                                 <li key={link.to}>
                                     <Link
                                         to={link.to}
                                         className="text-white/40 hover:text-[var(--color-primary)] text-sm transition-colors"
                                     >
-                                        {link.label}
+                                        {t(link.labelKey)}
                                     </Link>
                                 </li>
                             ))}
@@ -60,19 +66,19 @@ export default function Footer() {
                     {/* Working hours */}
                     <div>
                         <h4 className="text-sm font-semibold uppercase tracking-wider text-white/70 mb-4">
-                            Radno vreme
+                            {t("footer_hours")}
                         </h4>
                         <ul className="space-y-3 text-white/40 text-sm">
                             <li className="flex justify-between">
-                                <span>Pon — Pet</span>
+                                <span>{t("footer_mon_fri")}</span>
                                 <span className="text-white/60">10:00 — 23:00</span>
                             </li>
                             <li className="flex justify-between">
-                                <span>Subota</span>
+                                <span>{t("footer_sat")}</span>
                                 <span className="text-white/60">11:00 — 00:00</span>
                             </li>
                             <li className="flex justify-between">
-                                <span>Nedelja</span>
+                                <span>{t("footer_sun")}</span>
                                 <span className="text-white/60">12:00 — 22:00</span>
                             </li>
                         </ul>
@@ -81,7 +87,7 @@ export default function Footer() {
                     {/* Contact */}
                     <div>
                         <h4 className="text-sm font-semibold uppercase tracking-wider text-white/70 mb-4">
-                            Kontakt
+                            {t("footer_contact")}
                         </h4>
                         <ul className="space-y-3 text-white/40 text-sm">
                             <li className="flex items-center gap-2">
@@ -103,10 +109,10 @@ export default function Footer() {
                 {/* Bottom */}
                 <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-white/30 text-xs">
-                        © 2026 SMASH. Sva prava zadržana.
+                        {t("footer_rights")}
                     </p>
                     <p className="text-white/20 text-xs">
-                        Made with 🔥 in Belgrade
+                        {t("footer_made")}
                     </p>
                 </div>
             </div>

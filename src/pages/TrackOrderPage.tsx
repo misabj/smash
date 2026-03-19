@@ -3,21 +3,24 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Package, MapPin, Clock, CheckCircle, Truck, XCircle, Search, ArrowLeft, Timer } from "lucide-react";
 import { ordersApi, type TrackingOrderAPI } from "../services/api";
+import { useT } from "../context/LanguageContext";
+import type { TranslationKey } from "../i18n/translations";
 
-const statusSteps = [
-    { key: "pending", label: "Primljeno", icon: Clock, description: "Vaša porudžbina je primljena" },
-    { key: "preparing", label: "Priprema", icon: Package, description: "Pripremamo vašu narudžbinu" },
-    { key: "ready", label: "Spremno", icon: CheckCircle, description: "Porudžbina je spremna za dostavu" },
-    { key: "delivered", label: "Dostavljeno", icon: Truck, description: "Porudžbina je dostavljena" },
+const statusStepKeys: { key: string; labelKey: TranslationKey; icon: typeof Clock; descKey: TranslationKey }[] = [
+    { key: "pending", labelKey: "track_step_pending", icon: Clock, descKey: "track_step_pending_desc" },
+    { key: "preparing", labelKey: "track_step_preparing", icon: Package, descKey: "track_step_preparing_desc" },
+    { key: "ready", labelKey: "track_step_ready", icon: CheckCircle, descKey: "track_step_ready_desc" },
+    { key: "delivered", labelKey: "track_step_delivered", icon: Truck, descKey: "track_step_delivered_desc" },
 ];
 
 function getStepIndex(status: string): number {
     if (status === "cancelled") return -1;
-    return statusSteps.findIndex((s) => s.key === status);
+    return statusStepKeys.findIndex((s) => s.key === status);
 }
 
 export default function TrackOrderPage() {
     const { code } = useParams<{ code: string }>();
+    const { t } = useT();
     const [order, setOrder] = useState<TrackingOrderAPI | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -34,7 +37,7 @@ export default function TrackOrderPage() {
             const data = await ordersApi.track(trackingCode.trim());
             setOrder(data);
         } catch {
-            setError("Porudžbina sa tim kodom nije pronađena.");
+            setError(t("track_not_found"));
         } finally {
             setLoading(false);
         }
@@ -55,7 +58,7 @@ export default function TrackOrderPage() {
                     to="/"
                     className="inline-flex items-center gap-2 text-white/40 hover:text-white/70 text-sm mb-8 transition-colors"
                 >
-                    <ArrowLeft className="w-4 h-4" /> Nazad na početnu
+                    <ArrowLeft className="w-4 h-4" /> {t("track_back")}
                 </Link>
 
                 {/* Search bar */}
@@ -64,9 +67,9 @@ export default function TrackOrderPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-10"
                 >
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2">Prati porudžbinu</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold mb-2">{t("track_title")}</h1>
                     <p className="text-white/40 text-sm mb-6">
-                        Unesite kod za praćenje koji ste dobili prilikom narudžbine
+                        {t("track_subtitle")}
                     </p>
 
                     <form
@@ -94,7 +97,7 @@ export default function TrackOrderPage() {
                             {loading ? (
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                             ) : (
-                                "Traži"
+                                t("track_search")
                             )}
                         </button>
                     </form>
@@ -123,13 +126,13 @@ export default function TrackOrderPage() {
                         <div className="p-6 rounded-2xl bg-[var(--color-dark-light)] border border-white/5">
                             <div className="flex items-start justify-between mb-4">
                                 <div>
-                                    <p className="text-white/40 text-xs uppercase tracking-wider">Porudžbina</p>
+                                    <p className="text-white/40 text-xs uppercase tracking-wider">{t("track_order")}</p>
                                     <p className="text-xl font-bold text-[var(--color-primary)] tracking-wider mt-0.5">
                                         {order.tracking_code}
                                     </p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-white/40 text-xs">Kreirana</p>
+                                    <p className="text-white/40 text-xs">{t("track_created")}</p>
                                     <p className="text-sm text-white/70 mt-0.5">
                                         {new Date(order.created_at).toLocaleString("sr-RS")}
                                     </p>
@@ -140,7 +143,7 @@ export default function TrackOrderPage() {
                                 <div className="flex items-start gap-2 mt-4 pt-4 border-t border-white/5">
                                     <MapPin className="w-4 h-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
                                     <div>
-                                        <p className="text-white/40 text-xs">Adresa za dostavu</p>
+                                        <p className="text-white/40 text-xs">{t("track_address")}</p>
                                         <p className="text-sm text-white/80 mt-0.5">{order.delivery_address}</p>
                                     </div>
                                 </div>
@@ -155,7 +158,7 @@ export default function TrackOrderPage() {
                                         <Timer className="w-6 h-6 text-[var(--color-primary)]" />
                                     </div>
                                     <div>
-                                        <p className="text-white/50 text-xs">Očekivano vreme dostave</p>
+                                        <p className="text-white/50 text-xs">{t("track_eta")}</p>
                                         <p className="text-xl font-bold text-[var(--color-primary)]">
                                             {new Date(order.estimated_delivery_at).toLocaleTimeString("sr-RS", { hour: "2-digit", minute: "2-digit" })}
                                         </p>
@@ -170,7 +173,7 @@ export default function TrackOrderPage() {
                         {order.estimated_delivery_at && order.status === "delivered" && (
                             <div className="p-4 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center gap-3">
                                 <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
-                                <p className="text-green-400 text-sm font-medium">Porudžbina je uspešno dostavljena!</p>
+                                <p className="text-green-400 text-sm font-medium">{t("track_delivered")}</p>
                             </div>
                         )}
 
@@ -178,16 +181,16 @@ export default function TrackOrderPage() {
                         {isCancelled ? (
                             <div className="p-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-center">
                                 <XCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
-                                <h3 className="text-lg font-bold text-red-400 mb-1">Porudžbina otkazana</h3>
+                                <h3 className="text-lg font-bold text-red-400 mb-1">{t("track_cancelled")}</h3>
                                 <p className="text-white/40 text-sm">
-                                    Ova porudžbina je otkazana. Kontaktirajte nas za više informacija.
+                                    {t("track_cancelled_desc")}
                                 </p>
                             </div>
                         ) : (
                             <div className="p-6 rounded-2xl bg-[var(--color-dark-light)] border border-white/5">
-                                <h3 className="font-bold mb-6">Status porudžbine</h3>
+                                <h3 className="font-bold mb-6">{t("track_status")}</h3>
                                 <div className="space-y-0">
-                                    {statusSteps.map((step, i) => {
+                                    {statusStepKeys.map((step, i) => {
                                         const isCompleted = i <= currentStep;
                                         const isCurrent = i === currentStep;
                                         const Icon = step.icon;
@@ -212,7 +215,7 @@ export default function TrackOrderPage() {
                                                                 }`}
                                                         />
                                                     </div>
-                                                    {i < statusSteps.length - 1 && (
+                                                    {i < statusStepKeys.length - 1 && (
                                                         <div
                                                             className={`w-0.5 h-10 ${i < currentStep ? "bg-green-500/30" : "bg-white/5"
                                                                 }`}
@@ -230,13 +233,13 @@ export default function TrackOrderPage() {
                                                                 : "text-white/30"
                                                             }`}
                                                     >
-                                                        {step.label}
+                                                        {t(step.labelKey)}
                                                     </p>
                                                     <p
                                                         className={`text-xs mt-0.5 ${isCompleted ? "text-white/50" : "text-white/20"
                                                             }`}
                                                     >
-                                                        {step.description}
+                                                        {t(step.descKey)}
                                                     </p>
                                                 </div>
                                             </div>
@@ -248,7 +251,7 @@ export default function TrackOrderPage() {
 
                         {/* Order items */}
                         <div className="p-6 rounded-2xl bg-[var(--color-dark-light)] border border-white/5">
-                            <h3 className="font-bold mb-4">Stavke porudžbine</h3>
+                            <h3 className="font-bold mb-4">{t("track_items")}</h3>
                             <div className="space-y-2">
                                 {order.items.map((item, j) => (
                                     <div
@@ -265,7 +268,7 @@ export default function TrackOrderPage() {
                                 ))}
                             </div>
                             <div className="mt-4 pt-3 border-t border-white/5 flex justify-between">
-                                <span className="font-bold">Ukupno</span>
+                                <span className="font-bold">{t("cart_total")}</span>
                                 <span className="font-bold text-[var(--color-primary)]">
                                     {formatPrice(order.total)}
                                 </span>

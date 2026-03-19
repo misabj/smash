@@ -9,6 +9,7 @@ import {
     X,
     Bell,
     ShoppingBag,
+    Tag,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -20,6 +21,7 @@ const sidebarLinks = [
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
     { to: "/admin/menu", label: "Meni", icon: UtensilsCrossed, end: false },
     { to: "/admin/orders", label: "Porudžbine", icon: ClipboardList, end: false },
+    { to: "/admin/promotions", label: "Promocije", icon: Tag, end: false },
 ];
 
 export default function AdminLayout() {

@@ -62,6 +62,18 @@ db.exec(`
     estimated_delivery_at DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS promotions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT DEFAULT '',
+    discount_percent INTEGER NOT NULL CHECK(discount_percent > 0 AND discount_percent <= 100),
+    applicable_category TEXT CHECK(applicable_category IN ('burger', 'sandwich', 'sides', 'drinks', 'all')),
+    start_date TEXT NOT NULL,
+    end_date TEXT NOT NULL,
+    active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 var db_default = db;
 
@@ -381,6 +393,75 @@ router4.get("/", authMiddleware, (_req, res) => {
 });
 var stats_default = router4;
 
+// server/routes/promotions.ts
+import { Router as Router5 } from "express";
+var router5 = Router5();
+router5.get("/", (_req, res) => {
+  const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+  const promos = db_default.prepare(
+    "SELECT * FROM promotions WHERE active = 1 AND start_date <= ? AND end_date >= ? ORDER BY created_at DESC"
+  ).all(today, today).map((p) => ({ ...p, active: Boolean(p.active) }));
+  res.json(promos);
+});
+router5.get("/all", authMiddleware, (_req, res) => {
+  const promos = db_default.prepare("SELECT * FROM promotions ORDER BY created_at DESC").all().map((p) => ({ ...p, active: Boolean(p.active) }));
+  res.json(promos);
+});
+router5.post("/", authMiddleware, (req, res) => {
+  const { name, description, discount_percent, applicable_category, start_date, end_date, active } = req.body;
+  if (!name || !discount_percent || !start_date || !end_date) {
+    res.status(400).json({ error: "Missing required fields" });
+    return;
+  }
+  const result = db_default.prepare(
+    `INSERT INTO promotions (name, description, discount_percent, applicable_category, start_date, end_date, active)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`
+  ).run(
+    name,
+    description || "",
+    discount_percent,
+    applicable_category || "all",
+    start_date,
+    end_date,
+    active !== void 0 ? active ? 1 : 0 : 1
+  );
+  const promo = db_default.prepare("SELECT * FROM promotions WHERE id = ?").get(result.lastInsertRowid);
+  res.status(201).json({ ...promo, active: Boolean(promo.active) });
+});
+router5.put("/:id", authMiddleware, (req, res) => {
+  const { id } = req.params;
+  const existing = db_default.prepare("SELECT * FROM promotions WHERE id = ?").get(id);
+  if (!existing) {
+    res.status(404).json({ error: "Promotion not found" });
+    return;
+  }
+  const { name, description, discount_percent, applicable_category, start_date, end_date, active } = req.body;
+  db_default.prepare(
+    `UPDATE promotions SET name = ?, description = ?, discount_percent = ?, applicable_category = ?, start_date = ?, end_date = ?, active = ? WHERE id = ?`
+  ).run(
+    name ?? existing.name,
+    description ?? existing.description,
+    discount_percent ?? existing.discount_percent,
+    applicable_category ?? existing.applicable_category,
+    start_date ?? existing.start_date,
+    end_date ?? existing.end_date,
+    active !== void 0 ? active ? 1 : 0 : existing.active,
+    id
+  );
+  const updated = db_default.prepare("SELECT * FROM promotions WHERE id = ?").get(id);
+  res.json({ ...updated, active: Boolean(updated.active) });
+});
+router5.delete("/:id", authMiddleware, (req, res) => {
+  const { id } = req.params;
+  const result = db_default.prepare("DELETE FROM promotions WHERE id = ?").run(id);
+  if (result.changes === 0) {
+    res.status(404).json({ error: "Promotion not found" });
+    return;
+  }
+  res.json({ message: "Promotion deleted" });
+});
+var promotions_default = router5;
+
 // server/index.ts
 var __dirname2 = path2.dirname(fileURLToPath2(import.meta.url));
 var app = express();
@@ -394,6 +475,7 @@ app.use("/api/auth", auth_default);
 app.use("/api/menu", menu_default);
 app.use("/api/orders", orders_default);
 app.use("/api/stats", stats_default);
+app.use("/api/promotions", promotions_default);
 app.get("/api/events", (req, res) => {
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
@@ -404,8 +486,10 @@ app.get("/api/events", (req, res) => {
   addClient(res);
 });
 var distPath = path2.join(__dirname2, "..", "dist");
-app.use(express.static(distPath, { maxAge: "1y", immutable: true }));
+app.use("/assets", express.static(path2.join(distPath, "assets"), { maxAge: "1y", immutable: true }));
+app.use(express.static(distPath, { maxAge: 0 }));
 app.get("/{*splat}", (_req, res) => {
+  res.setHeader("Cache-Control", "no-cache");
   res.sendFile(path2.join(distPath, "index.html"));
 });
 var index_default = app;

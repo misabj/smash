@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { ShoppingBag, Plus } from "lucide-react";
 import type { MenuItem } from "../data/menu";
 import { useCart } from "../context/CartContext";
+import { useT } from "../context/LanguageContext";
+import { usePromotions } from "../context/PromotionsContext";
 
 interface Props {
     item: MenuItem;
@@ -10,6 +12,11 @@ interface Props {
 
 export default function MenuCard({ item, index }: Props) {
     const { addItem } = useCart();
+    const { t } = useT();
+    const { getDiscount } = usePromotions();
+
+    const discount = getDiscount(item.category);
+    const discountedPrice = discount > 0 ? Math.round(item.price * (1 - discount / 100)) : item.price;
 
     const formatPrice = (price: number) => {
         return `${price.toLocaleString("sr-RS")} RSD`;
@@ -36,7 +43,14 @@ export default function MenuCard({ item, index }: Props) {
                 {/* Tags */}
                 {item.popular && (
                     <div className="absolute top-3 left-3 px-3 py-1 bg-[var(--color-primary)] text-white text-xs font-bold rounded-full uppercase tracking-wider">
-                        Popular
+                        {t("card_popular")}
+                    </div>
+                )}
+
+                {/* Discount badge */}
+                {discount > 0 && (
+                    <div className="absolute top-3 right-3 px-2 py-1 bg-green-500 text-white text-xs font-bold rounded-full">
+                        -{discount}%
                     </div>
                 )}
             </div>
@@ -47,9 +61,22 @@ export default function MenuCard({ item, index }: Props) {
                     <h3 className="text-lg font-bold group-hover:text-[var(--color-primary)] transition-colors">
                         {item.name}
                     </h3>
-                    <span className="text-[var(--color-primary)] font-bold whitespace-nowrap text-sm">
-                        {formatPrice(item.price)}
-                    </span>
+                    <div className="text-right whitespace-nowrap">
+                        {discount > 0 ? (
+                            <>
+                                <span className="text-white/30 line-through text-xs block">
+                                    {formatPrice(item.price)}
+                                </span>
+                                <span className="text-green-400 font-bold text-sm">
+                                    {formatPrice(discountedPrice)}
+                                </span>
+                            </>
+                        ) : (
+                            <span className="text-[var(--color-primary)] font-bold text-sm">
+                                {formatPrice(item.price)}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 <p className="text-white/50 text-sm leading-relaxed mb-4 line-clamp-2">
@@ -74,7 +101,7 @@ export default function MenuCard({ item, index }: Props) {
                     className="w-full flex items-center justify-center gap-2 py-3 bg-white/5 hover:bg-[var(--color-primary)] rounded-xl font-medium text-sm transition-all duration-300 group/btn cursor-pointer"
                 >
                     <ShoppingBag className="w-4 h-4" />
-                    <span>Dodaj u korpu</span>
+                    <span>{t("card_add")}</span>
                     <Plus className="w-3 h-3 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
                 </button>
             </div>

@@ -3,18 +3,22 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ShoppingBag, Flame } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useT } from "../context/LanguageContext";
+import LanguageSwitcher from "./LanguageSwitcher";
+import type { TranslationKey } from "../i18n/translations";
 
-const navLinks = [
-    { to: "/", label: "Početna" },
-    { to: "/menu", label: "Meni" },
-    { to: "/about", label: "O nama" },
-    { to: "/contact", label: "Kontakt" },
+const navLinks: { to: string; labelKey: TranslationKey }[] = [
+    { to: "/", labelKey: "nav_home" },
+    { to: "/menu", labelKey: "nav_menu" },
+    { to: "/about", labelKey: "nav_about" },
+    { to: "/contact", labelKey: "nav_contact" },
 ];
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
     const { totalItems, setIsOpen } = useCart();
+    const { t } = useT();
     const location = useLocation();
 
     useEffect(() => {
@@ -58,13 +62,14 @@ export default function Navbar() {
                                     : "text-white/70"
                                     }`}
                             >
-                                {link.label}
+                                {t(link.labelKey)}
                             </Link>
                         ))}
                     </div>
 
                     {/* Cart + Mobile toggle */}
                     <div className="flex items-center gap-3">
+                        <LanguageSwitcher />
                         <button
                             onClick={() => setIsOpen(true)}
                             className="relative p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
@@ -110,7 +115,7 @@ export default function Navbar() {
                                         : "text-white/70"
                                         }`}
                                 >
-                                    {link.label}
+                                    {t(link.labelKey)}
                                 </Link>
                             ))}
                         </div>

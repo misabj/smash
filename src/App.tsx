@@ -15,6 +15,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminMenu from "./pages/admin/AdminMenu";
 import AdminOrders from "./pages/admin/AdminOrders";
+import AdminPromotions from "./pages/admin/AdminPromotions";
 
 export default function App() {
   const { toasts, dismissToast } = useCart();
@@ -30,6 +31,7 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="menu" element={<AdminMenu />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="promotions" element={<AdminPromotions />} />
         </Route>
 
         {/* Public routes */}
