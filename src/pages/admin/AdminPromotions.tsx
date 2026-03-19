@@ -218,10 +218,10 @@ export default function AdminPromotions() {
                                     <td className="px-5 py-4 hidden sm:table-cell">
                                         <span
                                             className={`inline-flex px-2 py-1 rounded-lg text-xs font-medium ${isCurrentlyActive(item)
-                                                    ? "bg-green-500/20 text-green-400"
-                                                    : item.active
-                                                        ? "bg-yellow-500/20 text-yellow-400"
-                                                        : "bg-white/10 text-white/40"
+                                                ? "bg-green-500/20 text-green-400"
+                                                : item.active
+                                                    ? "bg-yellow-500/20 text-yellow-400"
+                                                    : "bg-white/10 text-white/40"
                                                 }`}
                                         >
                                             {isCurrentlyActive(item)
@@ -368,11 +368,11 @@ export default function AdminPromotions() {
                                             }
                                             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                                         >
-                                            <option value="all">Ceo meni</option>
-                                            <option value="burger">Burger</option>
-                                            <option value="sandwich">Sendvič</option>
-                                            <option value="sides">Prilog</option>
-                                            <option value="drinks">Piće</option>
+                                            <option value="all" className="bg-neutral-900 text-white">Ceo meni</option>
+                                            <option value="burger" className="bg-neutral-900 text-white">Burger</option>
+                                            <option value="sandwich" className="bg-neutral-900 text-white">Sendvič</option>
+                                            <option value="sides" className="bg-neutral-900 text-white">Prilog</option>
+                                            <option value="drinks" className="bg-neutral-900 text-white">Piće</option>
                                         </select>
                                     </div>
                                 </div>
